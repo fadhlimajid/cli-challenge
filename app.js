@@ -189,27 +189,28 @@ prog
     .command('screenshot', 'Get a screenshot from a URL')
     .argument('<url>', 'insert the url')
     .option('--format [format]', 'insert preferred format', prog.STRING, 'png')
-    .option('--output [output]', "write screenshot's name and format", prog.STRING)
+    .option('--output [output]', "write screenshot's name and format", prog.STRING,'screenshot-')
     .action(function(args,options){
+        console.log(options.output)
         let link = args['url'];
         let name = '';
-        let num = -6;
+        let option = {
+            shotSize: {
+              width: 'all'
+            , height: 'all'
+            }
+        };
+        let num = 1;
         fs.readdirSync('./').forEach(a => {
-            if(a.includes(name)){
+            if(a.includes(options.output)){
                 num++
             }
         })
         let i = ("000" + num).slice(-3);
         link = link.replace(/https/,'http')
-        if (options.output){
-            if (i=='001'){name = options.output}
-            else{
-                let ug = options.output.split('.')
-                name = ug[0] + num + '.' + ug[1]
-            }
-        }
-        else {name = `screenshot-${i.toString()}.${options.format}`}
-        webshot(link, name, options, (err) => {
+        if (options.output!='screenshot-'){name = options.output}
+        else {name = `${options.output}${i.toString()}.${options.format}`}
+        webshot(link, name, option, (err) => {
             if(err){
                 console.log("An error ocurred ", err);
             }
@@ -227,9 +228,16 @@ prog
             }
             data = data.replace(/https/g,'http');
             data = data.split('\n');
+            let option = {
+                shotSize: {
+                  width: 'all'
+                , height: 'all'
+                }};
             for(let x = 0 ; x < data.length ; x++) {
-                let name = `link-${x+1}.${options.format}`
-                webshot(data[x], name, (err) => {
+                let abc = data[x].split('/')
+                let coba = abc[abc.length-1]
+                let name = `${coba}.${options.format}`
+                webshot(data[x], name, option, (err) => {
                     if(err){
                         console.log("An error ocurred ", err);
                     }
