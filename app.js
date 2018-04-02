@@ -191,7 +191,6 @@ prog
     .option('--format [format]', 'insert preferred format', prog.STRING, 'png')
     .option('--output [output]', "write screenshot's name and format", prog.STRING,'screenshot-')
     .action(function(args,options){
-        console.log(options.output)
         let link = args['url'];
         let name = '';
         let option = {
