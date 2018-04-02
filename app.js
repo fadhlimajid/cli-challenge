@@ -264,7 +264,7 @@ prog
                                 console.log(title);
                                 console.log (detail.join('\n'));
                                 console.log(synopsis);
-                                console.log('\n------------------------------------------------------------------------------------------------------\n')
+                                console.log('\n' + '-'.repeat(105) + '\n')
                             })
                         }
                     })
