@@ -7,6 +7,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const webshot = require('webshot');
 const xlsx = require('node-xlsx');
+request.defaults({jar: true})
 
 prog
 //1. String Transformation
@@ -233,9 +234,9 @@ prog
                 , height: 'all'
                 }};
             for(let x = 0 ; x < data.length ; x++) {
-                let abc = data[x].split('/')
-                let coba = abc[abc.length-1]
-                let name = `${coba}.${options.format}`
+                let a = data[x].split('/')
+                let b = a[a.length-1]
+                let name = `${b}.${options.format}`
                 webshot(data[x], name, option, (err) => {
                     if(err){
                         console.log("An error ocurred ", err);
@@ -245,25 +246,28 @@ prog
         });
     })
 
-//12. Get all information about new movies in theaters for today from http://www.21cineplex.com/nowplaying
-    .command('movies' , "Get all information about new movies in theaters for today from http://www.21cineplex.com/nowplaying")
+//12. Get all information about new movies in theaters for today from https://www.cgv.id/en/movies/now_playing
+    .command('movies' , "Get all information about new movies in theaters for today from https://www.cgv.id/en/movies/now_playing")
     .action(function(args){
-        request('http://www.21cineplex.com/the-man-with-iron-heart-movie,4718,15HHHH.htm', function (error, response, html) {
-
-            
-        if (!error && response.statusCode == 200) {
-                let $ = cheerio.load(html);
-                //console.log($('div')[0]);
-                console.log(html);
-                //console.log($('div.newscontent2').children().attr('src'));
-                $('#cont').each(function(i, element){
-                    console.log($(this).text())
-                    //let title = $(this).children().attr('h2');
-                    //console.log(`Attribute ${this.name}: ${this.value}`);
-                    // let url = $(this).parent().attr('href');
-                    //console.log(`Title: ${title}`);
-                    
-                    // console.log(`URL: ${url}\n`);}})
+        request('https://www.cgv.id/en/movies/now_playing', function  (error, response, htm) {    
+            if (!error && response.statusCode == 200) {
+                let $ = cheerio.load(htm);
+                $('div.movie-list-body a').each(function(i, element){
+                    let movie = $(this).attr('href')
+                    request(`https://www.cgv.id/${movie}`, function (error, response, html){
+                        if (!error && response.statusCode == 200) {
+                            let $ = cheerio.load(html);
+                            $('div.synopsis-section').each(function(i, element){
+                                let title = $(this).prev().text().trim();
+                                let detail  = $(this).children().children().text().split('\t').filter(x => x!='');
+                                let synopsis = $(this).children().next().text().trim();
+                                console.log(title);
+                                console.log (detail.join('\n'));
+                                console.log(synopsis);
+                                console.log('\n------------------------------------------------------------------------------------------------------\n')
+                            })
+                        }
+                    })
                 })
             }
         })
