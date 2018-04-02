@@ -83,7 +83,7 @@ prog
             let a = 0;
             let b = str.length-1
             for (let len = Math.floor((str.length)/2) ; len<=str.length ; len++){
-                (str[a]==str[b]) ? (x = "Yes") : (x = "No");
+                if (str[a]==str[b]){x = "Yes"}else{x = "No"; break;}
                 a++
                 b--
             }
